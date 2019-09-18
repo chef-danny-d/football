@@ -1,0 +1,1 @@
+{"version":3,"sources":["style/style.sass"],"names":[],"mappings":"AACI;EACI","file":"app.25d4b319.css","sourceRoot":"../src","sourcesContent":[".league\n    &--title\n        list-style: none"]}
