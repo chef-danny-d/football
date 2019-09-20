@@ -10937,36 +10937,62 @@ var _jquery = _interopRequireDefault(require("jquery"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 window.addEventListener('load', function () {
-  var appHeaders = new Headers();
-  appHeaders.append('X-Auth-Token', '5c3059dedce14dee8359729c97526bf2');
+  //URL querying
   var proxy = 'https://cors-anywhere.herokuapp.com/';
-  var baseURL = 'http://api.football-data.org/v2/';
-  var competitions = 'competitions/';
-  var leagueName = document.querySelector('.leagueName');
-  var leagues = document.querySelector('.leagues');
-  var live = document.querySelector('.live'); //gets the list of leagues / competitions
+  var baseURL = 'https://sportsop-soccer-sports-open-data-v1.p.rapidapi.com/v1';
+  var leagues = '/leagues'; //DOM selectors
 
-  var url = proxy + baseURL + competitions;
-  fetch(url, appHeaders).then(function (response) {
+  var leaguesDOM = document.querySelector('.leagues');
+  var standingDOM = document.querySelector('.standing'); //other variables
+
+  var leagueSlug;
+  var counter = 0;
+
+  function tableFetch(leagueSlug) {
+    //gets the table for a specific competition
+    var standingURL = proxy + baseURL + leagues + '/' + leagueSlug + '/seasons/19-20/standings';
+    console.log(standingURL);
+    fetch(standingURL, {
+      headers: {
+        method: "GET",
+        'x-rapidapi-host': 'sportsop-soccer-sports-open-data-v1.p.rapidapi.com',
+        'x-rapidapi-key': '9732e3cd21msh83fb40c2c27e60cp1ba9a3jsncc25d1d1ff5c'
+      }
+    }).then(function (resp) {
+      return resp.json();
+    }).then(function (stand) {
+      if (counter > 0) {
+        (0, _jquery.default)(standingDOM).empty();
+      }
+
+      var compNames = stand.data.standings;
+      var mapArr = compNames.map(function (y) {
+        (0, _jquery.default)(standingDOM).append("\n                <tr class=\"standing\">\n                    <th scope=\"row\">".concat(y.position, "</th>\n                    <td>").concat(y.team, "</td>\n                    <td>").concat(y.overall.matches_played, "</td>\n                    <td>").concat(y.overall.wins, "</td>\n                    <td>").concat(y.overall.draws, "</td>\n                    <td>").concat(y.overall.losts, "</td>\n                    <td>").concat(y.overall.scores, "</td>\n                    <td>").concat(y.overall.conceded, "</td>\n                    <td>").concat(y.overall.goal_difference, "</td>\n                    <td>").concat(y.overall.points, "</td>\n                    <!-- TODO: last 5 game results will come here -->\n                </tr>\n                "));
+      });
+    });
+  } //gets the list of leagues / competitions
+
+
+  var url = proxy + baseURL + leagues;
+  fetch(url, {
+    headers: {
+      method: "GET",
+      'x-rapidapi-host': 'sportsop-soccer-sports-open-data-v1.p.rapidapi.com',
+      'x-rapidapi-key': '9732e3cd21msh83fb40c2c27e60cp1ba9a3jsncc25d1d1ff5c'
+    }
+  }).then(function (response) {
     return response.json();
   }).then(function (data) {
-    var compNames = data.competitions;
+    var compNames = data.data.leagues;
     var map1 = compNames.map(function (x) {
-      (0, _jquery.default)(leagues).append("<li class=\"leagues--title\"><a index=".concat(x.id, " href=\"#\">").concat(x.name, "</a></li>"));
+      (0, _jquery.default)(leaguesDOM).append("<li class=\"leagues--title\"><a id=".concat(x.league_slug, " href=\"#\">").concat(x.name, "</a></li>"));
+      (0, _jquery.default)("#".concat(x.league_slug)).click(function () {
+        counter++;
+        leagueSlug = x.league_slug;
+        console.log(leagueSlug);
+        tableFetch(leagueSlug);
+      });
     });
-  }); //gets the table for a specific competition
-
-  var tableUrl = proxy + 'http://api.football-data.org/v2/competitions/2015/standings';
-  fetch(tableUrl, appHeaders).then(function (resp) {
-    return resp.json();
-  }).then(function (table) {
-    console.log(table);
-    /*
-    let standingArray = table.standings
-    let standing = standingArray.map(x => {
-        $(live).append(`${x.table.team.name}</br>`)
-    })
-    */
   });
 });
 },{"jquery":"../node_modules/jquery/dist/jquery.js"}],"../../../../../usr/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
@@ -10997,7 +11023,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "46751" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "46821" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
